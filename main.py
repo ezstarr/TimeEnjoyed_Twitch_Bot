@@ -1,9 +1,13 @@
 from twitchio.ext import commands
+from dotenv import load_dotenv
 import os
 
-token = os.environ['ACCESS_TOKEN']
+# Credentials
+load_dotenv('.env')
 
-client.run(token)
+client.run(os.environ['ACCESS_TOKEN'])
+
+token = os.environ['ACCESS_TOKEN']
 
 class Bot(commands.Bot):
     def __init__(self):
