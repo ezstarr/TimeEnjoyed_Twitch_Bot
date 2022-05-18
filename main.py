@@ -1,5 +1,7 @@
 from twitchio.ext import commands
 from dotenv import load_dotenv
+from simple_chalk import chalk, green
+import datetime
 import os
 
 # Credentials
@@ -20,7 +22,7 @@ class Bot(commands.Bot):
         """This function is an example of an event"""
         # Notify someone when everything is ready
         # Is logged in and ready to use commands
-        print(f'Logged in as | {self.nick}')
+        print(green(f'Logged in as | {self.nick}'))
         print(f'User id is | {self.user_id}')
 
 
@@ -30,11 +32,15 @@ class Bot(commands.Bot):
         await ctx.send(f'Hello {ctx.author.name}!')
 
     @commands.command()
-    async def so(self, ctx: commands.Context):
+    async def test(self, ctx: commands.Context):
         # If someone types ?hello, this command is invoked...
         # Send a hello back
         # Example of how to send a reply back
         await ctx.send(f'how does this work {ctx.author.name}!')
+
+    @commands.command()
+    async def mbti(self, ctx:commands.Context):
+        await ctx.send(f'https://www.16personalities.com/free-personality-test')
 
 bot = Bot()
 bot.run()
