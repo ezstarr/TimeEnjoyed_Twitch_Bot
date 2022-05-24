@@ -5,7 +5,9 @@ import datetime
 import os
 import logging
 import twitchio
-import counter
+# import counter
+import json
+import random
 
 # Opens .env file
 load_dotenv('.env')
@@ -22,6 +24,20 @@ last_shoutout_Time = 0
 always_shoutout = ['xmetrix']
 bot_name = "TheTimeBot"
 
+greetings = []
+greetings_file = open('data/landing-greetings.txt', 'r')
+greeting_lines = greetings_file.readlines()
+
+for line in greeting_lines:
+    greetings.append(line)
+
+
+greetings_file.close()
+
+with open("data/landing-greetings.txt", "r") as greetings_file:
+    greetings_file.readlines()
+
+    print(greetings_file)
 
 def timestamp():
     global last_shoutout_Time
@@ -46,7 +62,9 @@ class TheTimeBot(commands.Bot):
         print(f'User id is | {self.user_id}')
 
     async def event_channel_joined(self, channel: twitchio.Channel):
-        await channel.send("I've landed!")
+        selected_greeting = random.choice(greetings)
+        await channel.send(selected_greeting)
+        #await channel.send("Hi guys. This is my lame draft greeting -_-. Ugh. Under construction")
 
 
     @commands.command()
