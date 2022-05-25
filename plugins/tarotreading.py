@@ -26,3 +26,7 @@ def get_tarot_names(json_file_path):
 
 
 tarot_names_list = get_tarot_names('../data/tarot-cards.json')
+
+
+def get_tarot_names_list():
+    return tarot_names_list

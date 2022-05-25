@@ -94,12 +94,11 @@ class TheTimeBot(commands.Bot):
     async def mbti(self, ctx:commands.Context):
         await ctx.send(f'https://www.16personalities.com/free-personality-test')
 
-tarot_names_list = tarotreading.get_tarot_names("data/tarot-cards.json")
 
     @commands.command()
     async def getreading(self, ctx:commands.Context):
-        tarot_names_list = tarotreading.get_tarot_names("data/tarot-cards.json")
-        chosen_card = random.choice(tarot_names_list)
+        tarot_choices = tarotreading.get_tarot_names_list()
+        chosen_card = random.choice(tarot_choices)
         await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')
 
 
