@@ -6,8 +6,9 @@ import os
 import logging
 import twitchio
 # import counter
-import json
 import random
+from plugins import tarotreading
+
 
 # Opens .env file
 load_dotenv('.env')
@@ -24,13 +25,13 @@ last_shoutout_Time = 0
 always_shoutout = ['xmetrix']
 bot_name = "TheTimeBot"
 
+# ========= Open Greetings File ==================
 greetings = []
 greetings_file = open('data/landing-greetings.txt', 'r')
 greeting_lines = greetings_file.readlines()
 
 for line in greeting_lines:
     greetings.append(line)
-
 
 greetings_file.close()
 
@@ -64,13 +65,15 @@ class TheTimeBot(commands.Bot):
     async def event_channel_joined(self, channel: twitchio.Channel):
         selected_greeting = random.choice(greetings)
         await channel.send(selected_greeting)
-        #await channel.send("Hi guys. This is my lame draft greeting -_-. Ugh. Under construction")
+        # await channel.send("Hi guys. This is my lame draft greeting -_-. Ugh. Under construction")
 
 
     @commands.command()
-    async def hello(self, ctx: commands.Context):
+    async def today(self, ctx: commands.Context):
     # Example of how to send a reply back
-        await ctx.send(f'Hello {ctx.author.name}!')
+        await ctx.send(f'5/25 - Python Crash Course ch 15 or working on Twitch Bot.')
+
+
 
     @commands.command()
     async def test(self, ctx: commands.Context):
@@ -91,8 +94,18 @@ class TheTimeBot(commands.Bot):
     async def mbti(self, ctx:commands.Context):
         await ctx.send(f'https://www.16personalities.com/free-personality-test')
 
+tarot_names_list = tarotreading.get_tarot_names("data/tarot-cards.json")
+
+    @commands.command()
+    async def getreading(self, ctx:commands.Context):
+        tarot_names_list = tarotreading.get_tarot_names("data/tarot-cards.json")
+        chosen_card = random.choice(tarot_names_list)
+        await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')
+
+
     @commands.command()
     async def shout_out(self, channel, ctx:commands.Context):
+        """under construction"""
         global last_shoutout_Time
         if last_shoutout_Time == 0:
             timestamp()
