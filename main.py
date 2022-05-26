@@ -16,6 +16,8 @@ load_dotenv('.env')
 # Assigns secret access token to "token".
 token = os.environ['ACCESS_TOKEN']
 
+# Gets the "source paths"
+
 # Logs events to help with future debugging and record keeping.
 logging.basicConfig(level=logging.INFO)
 
@@ -97,6 +99,12 @@ class TheTimeBot(commands.Bot):
 
     @commands.command()
     async def getreading(self, ctx:commands.Context):
+        tarot_choices = tarotreading.get_tarot_names_list()
+        chosen_card = random.choice(tarot_choices)
+        await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')
+
+    @commands.command()
+    async def getreading(self, ctx: commands.Context):
         tarot_choices = tarotreading.get_tarot_names_list()
         chosen_card = random.choice(tarot_choices)
         await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')

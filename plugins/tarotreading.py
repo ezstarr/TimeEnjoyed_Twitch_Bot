@@ -1,6 +1,11 @@
 import json
+from pathlib import Path
 import sys
 from pprint import pprint as pp
+
+# This makes the directory that the module is loaded from as "source path"
+source_path = Path(__file__).resolve()
+source_dir = source_path.parent
 
 
 # Called in main.py
@@ -25,7 +30,7 @@ def get_tarot_names(json_file_path):
     return card_names
 
 
-tarot_names_list = get_tarot_names('../data/tarot-cards.json')
+tarot_names_list = get_tarot_names(f'{source_dir}/../data/tarot-cards.json')
 
 
 def get_tarot_names_list():
