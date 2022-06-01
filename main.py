@@ -8,6 +8,7 @@ import twitchio
 # import counter
 import random
 from plugins import tarotreading
+from count_database import trigger_a_count
 
 
 # Opens .env file
@@ -71,18 +72,13 @@ class TheTimeBot(commands.Bot):
 
 
     @commands.command()
-    async def today(self, ctx: commands.Context):
-    # Example of how to send a reply back
-        await ctx.send(f'5/25 - Python Crash Course ch 15 or working on Twitch Bot.')
-
-
-
-    @commands.command()
     async def test(self, ctx: commands.Context):
-        # If someone types ?hello, this command is invoked...
-        # Send a hello back
-        # Example of how to send a reply back
-        await ctx.send(f'how does this work {ctx.author.name}!')
+        total = trigger_a_count()
+        await ctx.send(f"TimeEnjoyed said test {total} times.")
+
+
+
+
 
     @commands.command()
     async def so3(self, ctx: commands.Context, channel):
