@@ -4,9 +4,6 @@ count_conn = sqlite3.connect('counter_db.db')
 cursor = count_conn.cursor()
 
 
-cursor.execute("ALTER TABLE test_counts RENAME COLUMN count TO a_count")
-
-
 cursor.execute("""CREATE TABLE IF NOT EXISTS test_counts (
     a_count integer, 
     date_logged date
