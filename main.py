@@ -77,9 +77,6 @@ class TheTimeBot(commands.Bot):
         await ctx.send(f"TimeEnjoyed said test {total} times.")
 
 
-
-
-
     @commands.command()
     async def so3(self, ctx: commands.Context, channel):
 
@@ -95,12 +92,6 @@ class TheTimeBot(commands.Bot):
 
     @commands.command()
     async def getreading(self, ctx:commands.Context):
-        tarot_choices = tarotreading.get_tarot_names_list()
-        chosen_card = random.choice(tarot_choices)
-        await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')
-
-    @commands.command()
-    async def getreading(self, ctx: commands.Context):
         tarot_choices = tarotreading.get_tarot_names_list()
         chosen_card = random.choice(tarot_choices)
         await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')
