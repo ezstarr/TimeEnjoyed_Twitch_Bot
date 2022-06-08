@@ -100,12 +100,15 @@ class TheTimeBot(commands.Bot):
     async def xkcd(self, ctx: commands.Context, comic_num):
         """Returns XKCD url and title."""
         int_comic_num = int(comic_num)
-        comic_title = await xkcd.async_call(int_comic_num)
-        await ctx.send(f'http://www.xkcd.com/{comic_num}/ - {comic_title}')
+        if int_comic_num > 2630 or int_comic_num <= 0:
+            await ctx.send(f"That number is out of range, here's the most recent comic: http://www.xkcd.com/")
+        else:
+            comic_title = await xkcd.async_call(int_comic_num)
+            await ctx.send(f'http://www.xkcd.com/{comic_num}/ - {comic_title}')
 
 
     @commands.command()
-    async def shout_out(self, channel, ctx:commands.Context):
+    async def so(self, channel, ctx:commands.Context):
         """under construction"""
         global last_shoutout_Time
         if last_shoutout_Time == 0:
