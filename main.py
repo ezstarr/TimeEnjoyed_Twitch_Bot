@@ -7,7 +7,7 @@ import logging
 import twitchio
 # import counter
 import random
-from plugins import tarotreading
+from plugins import tarotreading, xkcd
 from count_database import trigger_a_count
 
 
@@ -95,6 +95,13 @@ class TheTimeBot(commands.Bot):
         tarot_choices = tarotreading.get_tarot_names_list()
         chosen_card = random.choice(tarot_choices)
         await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')
+
+    @commands.command()
+    async def xkcd(self, ctx: commands.Context, comic_num):
+        """Returns XKCD url and title."""
+        int_comic_num = int(comic_num)
+        comic_title = await xkcd.async_call(int_comic_num)
+        await ctx.send(f'http://www.xkcd.com/{comic_num}/ - {comic_title}')
 
 
     @commands.command()
