@@ -8,12 +8,18 @@ import twitchio
 # import counter
 import json
 import random
+from plugins import tarotreading, xkcd
+from count_database import trigger_a_count
+
+# ========== CREDENTIALS ==================
 
 # Opens .env file
 load_dotenv('.env')
 
 # Assigns secret access token to "token".
 token = os.environ['ACCESS_TOKEN']
+
+# Gets the "source paths"
 
 # Logs events to help with future debugging and record keeping.
 logging.basicConfig(level=logging.INFO)
@@ -24,13 +30,14 @@ last_shoutout_Time = 0
 always_shoutout = ['xmetrix']
 bot_name = "TheTimeBot"
 
+# ========= Open Greetings File ==================
+
 greetings = []
 greetings_file = open('data/landing-greetings.txt', 'r')
 greeting_lines = greetings_file.readlines()
 
 for line in greeting_lines:
     greetings.append(line)
-
 
 greetings_file.close()
 
@@ -42,6 +49,8 @@ with open("data/landing-greetings.txt", "r") as greetings_file:
 def timestamp():
     global last_shoutout_Time
     last_shoutout_Time = (datetime.datetime.utcnow() - epoch).total_seconds()
+
+# ============== Bot begins =================
 
 
 class TheTimeBot(commands.Bot):
@@ -64,20 +73,15 @@ class TheTimeBot(commands.Bot):
     async def event_channel_joined(self, channel: twitchio.Channel):
         selected_greeting = random.choice(greetings)
         await channel.send(selected_greeting)
-        #await channel.send("Hi guys. This is my lame draft greeting -_-. Ugh. Under construction")
+        # await channel.send("Hi guys. This is my lame draft greeting -_-. Ugh. Under construction")
 
-
-    @commands.command()
-    async def hello(self, ctx: commands.Context):
-    # Example of how to send a reply back
-        await ctx.send(f'Hello {ctx.author.name}!')
+#========== NORMAL COMMANDS============
 
     @commands.command()
     async def test(self, ctx: commands.Context):
-        # If someone types ?hello, this command is invoked...
-        # Send a hello back
-        # Example of how to send a reply back
-        await ctx.send(f'how does this work {ctx.author.name}!')
+        total = trigger_a_count()
+        await ctx.send(f"TimeEnjoyed said test {total} times.")
+
 
     @commands.command()
     async def so3(self, ctx: commands.Context, channel):
@@ -92,7 +96,32 @@ class TheTimeBot(commands.Bot):
         await ctx.send(f'https://www.16personalities.com/free-personality-test')
 
     @commands.command()
+    async def getreading(self, ctx:commands.Context):
+        """Gets user a reading"""
+        tarot_choices = tarotreading.get_tarot_names_list()
+        chosen_card = random.choice(tarot_choices)
+        await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')
+
+    @commands.command()
+    async def xkcd(self, ctx:commands.Context, comic_num):
+        """Returns XKCD url and title."""
+        int_comic_num = int(comic_num)
+        comic_title = await xkcd.async_call(int_comic_num)
+        await ctx.send(f'http://www.xkcd.com/{comic_num}/ - {comic_title}')
+
+    # @commands.command()
+    # async def xkcdd(self, ctx:commands.Context, c_number):
+    #     c_title = xkcd.loop.run_until_complete(xkcd.async_call(c_number))
+    #     await ctx.send(f'{c_title}')
+
+
+
+
+
+
+    @commands.command()
     async def shout_out(self, channel, ctx:commands.Context):
+        """under construction"""
         global last_shoutout_Time
         if last_shoutout_Time == 0:
             timestamp()
