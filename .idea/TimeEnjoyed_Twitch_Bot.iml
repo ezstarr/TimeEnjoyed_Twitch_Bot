@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.10 (TimeEnjoyed_Twitch_Bot)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="Chapter 12" />
+    <orderEntry type="module" module-name="CodewarsSolutions" />
+    <orderEntry type="module" module-name="SidewaysShooter" />
+    <orderEntry type="module" module-name="timeenjoyeddiscordbot" />
+    <orderEntry type="module" module-name="Flask Website" />
+  </component>
+</module>

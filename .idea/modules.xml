@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Python Crash Course/Chapter 12/.idea/Chapter 12.iml" filepath="$PROJECT_DIR$/../Python Crash Course/Chapter 12/.idea/Chapter 12.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../CodewarsSolutions/.idea/CodewarsSolutions.iml" filepath="$PROJECT_DIR$/../CodewarsSolutions/.idea/CodewarsSolutions.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Flask Website/.idea/Flask Website.iml" filepath="$PROJECT_DIR$/../Flask Website/.idea/Flask Website.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Python Crash Course/SidewaysShooter/.idea/SidewaysShooter.iml" filepath="$PROJECT_DIR$/../Python Crash Course/SidewaysShooter/.idea/SidewaysShooter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/TimeEnjoyed_Twitch_Bot.iml" filepath="$PROJECT_DIR$/.idea/TimeEnjoyed_Twitch_Bot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../timeenjoyeddiscordbot/.idea/timeenjoyeddiscordbot.iml" filepath="$PROJECT_DIR$/../timeenjoyeddiscordbot/.idea/timeenjoyeddiscordbot.iml" />
+    </modules>
+  </component>
+</project>
