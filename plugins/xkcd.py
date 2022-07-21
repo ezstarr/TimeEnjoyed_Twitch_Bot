@@ -19,29 +19,24 @@ async_client = xkcd_wrapper.AsyncClient()
 async def async_call(c_num):
     responses = await asyncio.gather(
         async_client.get(c_num),          # Comic object with comic 100 data
-        async_client.get_latest(),      # Comic object containing data of the latest xkcd comic
-        async_client.get_random()       # Comic object of a random comic
         )
-    print(
-        responses[0],                   # async_client.get(100) output
-        responses[0].title,
-        responses[0].comic_url,
-        sep='\n'
-    )
-    return responses[0].title
-
-#
-# async def get_title(comic_num):
-#     responses = await asyncio.gather(
-#         async_client.get(comic_num),  # Comic object with comic 100 data
-#         async_client.get_latest(),  # Comic object containing data of the latest xkcd comic
-#         async_client.get_random()  # Comic object of a random comic
-#     )
-#     return responses[0].title
+    print(responses)
+    return responses[0]
 
 
 
 
+
+
+# TODO: web scrape for titles in python, https://xkcd.com/archive/
+"""
+example dictionary to populate:
+
+# create my own indices of titles and numbers, in my own database.
+
+var = {{"id": "id", "title": "the title"},
+       {"id": "id", "title": "the title"}}
+"""
 
 
 

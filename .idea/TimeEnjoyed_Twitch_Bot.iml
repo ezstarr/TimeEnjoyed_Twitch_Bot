@@ -12,4 +12,7 @@
     <orderEntry type="module" module-name="timeenjoyeddiscordbot" />
     <orderEntry type="module" module-name="Flask Website" />
   </component>
+  <component name="PyDocumentationSettings">
+    <option name="renderExternalDocumentation" value="true" />
+  </component>
 </module>
