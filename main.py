@@ -6,14 +6,20 @@ import datetime
 import os
 import logging
 import twitchio
+import httpx
 # import counter
 import random
-from plugins import tarotreading, xkcd
+from plugins import xkcd, tarotreading
 from count_database import trigger_a_count, return_test_number
 # for sp recognition:
 import threading
 import speech_recognition as sr
 
+# ===============
+from pynput.keyboard import Key, Controller
+
+
+keyboard = Controller()
 
 # Opens .env file
 load_dotenv('.env')
@@ -40,13 +46,13 @@ greeting_lines = greetings_file.readlines()
 
 for line in greeting_lines:
     greetings.append(line)
-
 greetings_file.close()
+
 
 with open("data/landing-greetings.txt", "r") as greetings_file:
     greetings_file.readlines()
-
     print(greetings_file)
+
 
 def timestamp():
     global last_shoutout_Time
@@ -64,7 +70,6 @@ class TheTimeBot(commands.Bot):
         SRThread(self).start()
         self.loop.create_task(self.sr_listen())
 
-
     async def event_ready(self):
         """This function is an example of an event"""
         "Called once the bot goes online"
@@ -77,6 +82,8 @@ class TheTimeBot(commands.Bot):
         await channel.send(selected_greeting)
         # await channel.send("Hi guys. This is my lame draft greeting -_-. Ugh. Under construction")
 
+
+
     async def sr_listen(self) -> None:
         await self.wait_for_ready()
         channel = self.get_channel(user_channel)
@@ -85,14 +92,25 @@ class TheTimeBot(commands.Bot):
             if response['transcription'] is None:
                 continue
 
-            if 'time' in response['transcription']:
+            if 'pamphlet' in response['transcription']:
                 print(response['transcription'])
                 await channel.send('!time')
 
-            if 'test' in response['transcription']:
+            if 'carpet' in response['transcription']:
                 print(response['transcription'])
                 await channel.send("!test")
 
+            if 'meta' in response['transcription']:
+                print(response['transcription'])
+                keyboard.press(Key.ctrl_l)
+                keyboard.press(Key.alt_l)
+                keyboard.press(Key.shift)
+                keyboard.press('2')
+                keyboard.release(Key.ctrl_l)
+                keyboard.release(Key.alt_l)
+                keyboard.release(Key.shift)
+                keyboard.release('2')
+                # await channel.send("!meta")
 
     @commands.command()
     async def test(self, ctx: commands.Context):
@@ -104,30 +122,101 @@ class TheTimeBot(commands.Bot):
 
     @commands.command()
     async def soc(self, ctx: commands.Context):
-        await ctx.send(f"https://www.instagram.com/time.enjoyed/ \nhttps://twitter.com/TimeEnjoyed_ \nhttps://github.com/ezstarr \nhttps://www.tiktok.com/@estherwlee \nhttps://discord.com/invite/xyJvutjuuY")
+        await ctx.send(
+            f"https://www.instagram.com/time.enjoyed/ \nhttps://twitter.com/TimeEnjoyed_ \nhttps://github.com/ezstarr \nhttps://www.tiktok.com/@estherwlee \nhttps://discord.com/invite/xyJvutjuuY")
         # total = trigger_a_count()
         # await ctx.send(f"Speech Recognition heard 'test' {total} times")
 
-
     @commands.command()
     async def so3(self, ctx: commands.Context, channel):
-
-        # If someone types ?hello, this command is invoked...
-        # Send a hello back
-        # Example of how to send a reply back
         await ctx.send('BE SURE TO CHECK OUT https://twitch.tv/' + channel + ' they are an awesome person')
 
     @commands.command()
-    async def mbti(self, ctx:commands.Context):
+    async def mbti(self, ctx: commands.Context):
         await ctx.send(f'https://www.16personalities.com/free-personality-test')
 
-
     @commands.command()
-    async def getreading(self, ctx:commands.Context):
+    async def getreading(self, ctx: commands.Context):
         tarot_choices = tarotreading.get_tarot_names_list()
         chosen_card = random.choice(tarot_choices)
         await ctx.send(f'{ctx.author.name}, your tarot card is {chosen_card}')
 
+    @commands.command()
+    async def clan(self, ctx: commands.Context):
+        await ctx.send(f"Join our codewars clan: 'TimeEnjoyedCoding' :)")
+
+    @commands.command()
+    async def aoc(self, ctx: commands.Context):
+        await ctx.send(f"private leaderboard join code: '2267208-c2779062'")
+
+    @commands.command()
+    async def survey(self, ctx: commands.Context):
+        await ctx.send(f"https://forms.gle/wVG9Sv1Ahjn4CNUD7")
+
+    @commands.command()
+    async def discord(self, ctx: commands.Context):
+        await ctx.send(f"https://discord.gg/K9hEvJABYy")
+
+    @commands.command()
+    async def enneagram(self, ctx: commands.Context):
+        await ctx.send(f"This enneagram test takes about 15 mins: https://similarminds.com/enneagram-test.html")
+
+    @commands.command()
+    async def ratereading(self, ctx: commands.Context, rating=""):
+        author = ctx.author.name
+        if not rating.isdecimal():
+            await ctx.send(f"rating needs to be a number between 1-10")
+            return "rating needs to be a number between 1-10"
+        int_num = int(rating)
+        rating = max(1, min(int_num, 10))
+        async with httpx.AsyncClient() as client:
+            post_request = await client.post('http://localhost:8000/tarot/twitch_reads', data={
+                'rating': rating,
+                'user': author})
+            print(rating)
+            print(author)
+            print(post_request)
+            print(f"-")
+            print(post_request.text)
+
+
+            await ctx.send(f"{post_request.text}")
+            #     await ctx.send(f"{resp_text}{author}, }your rating has been saved to http://timeenjoyed.dev if you're a user")
+            # else:
+            #     await ctx.send(f"{author}, that didn't work. do you have an account?")
+    # @commands.command()
+    # # make a request to trigger a possible response
+    # # mod only
+    # async def rating(self,twitch_user= ctx.author.name):
+    #
+    #     async def rate_tarot()
+    # username in global list?
+    # or get from my request command
+
+    # @commands.command()
+    # async def rate_tarot(self, ctx: commands.Context, name=""):
+    #     if ctx.author.is_mod is True:
+    #         global person_rating
+    #         person_rating.append(name)
+    #         await ctx.send(f'Hi {ctx.author.name}, type !rating [1-10] to rate my reading.')
+
+    # @commands.command()
+    # async def rating(self, ctx: commands.Context, rating=""):
+    #     global person_rating
+    #     if ctx.author.name in person_rating:
+    #         # TODO: add name and rating to database
+    #         await ctx.send(f'@{ctx.author.name}, ty! <3 Your rating has been logged.')
+
+
+        #
+        #
+        #     user = ctx.author.name
+        # # add_rating() insert function to add user + rating to dabase
+        # print(user)
+
+    # @commands.command()
+    #
+    #     await ctx.send(f'Hi {ctx.author.name}, your rating of {tarot_rating} has been logged.')
 
     @commands.command()
     async def xkcd(self, ctx: commands.Context, comic_num=""):
@@ -135,22 +224,23 @@ class TheTimeBot(commands.Bot):
         try:
             # get a valid comic_id:
             int_comic_num = int(comic_num)
-            #comic_id = await xkcd.async_call(comic_num)
+            # comic_id = await xkcd.async_call(comic_num)
             xkcd_obj = await xkcd.async_call(int_comic_num)
             print(xkcd_obj)
             await ctx.send(f'{xkcd_obj.comic_url}/ - {xkcd_obj.title}')
-                    # except int_comic_num == 0:
-                    #     await ctx.send(
-                    #         f"Here's the most recent comic (number is missing or out-of-range): http://www.xkcd.com/")
-                    # except xkcd.xkcd_wrapper.exceptions.HttpError: #error for when comic is out of range
-                    #     await ctx.send(
-                    #         f"Here's the most recent comic (number is missing or out-of-range): http://www.xkcd.com/")
+            # except int_comic_num == 0:
+            #     await ctx.send(
+            #         f"Here's the most recent comic (number is missing or out-of-range): http://www.xkcd.com/")
+            # except xkcd.xkcd_wrapper.exceptions.HttpError: #error for when comic is out of range
+            #     await ctx.send(
+            #         f"Here's the most recent comic (number is missing or out-of-range): http://www.xkcd.com/")
         except Exception as e:
             await ctx.send(f"Here's the most recent comic (number is missing or out-of-range): http://www.xkcd.com/")
 
     @commands.command()
     async def raid(self, ctx: commands.Context):
-        await ctx.send(f"<3 Time To Enjoy The Raid <3 Time To Enjoy The Raid <3 Time To Enjoy The Raid <3 Time To Enjoy The Raid <3")
+        await ctx.send(
+            f"<3 Time To Enjoy The Raid <3 Time To Enjoy The Raid <3 Time To Enjoy The Raid <3 Time To Enjoy The Raid <3")
 
     @commands.command()
     async def raid1(self, ctx: commands.Context):
@@ -166,6 +256,18 @@ class TheTimeBot(commands.Bot):
     async def bot_commands(self, ctx: commands.Context):
         await ctx.send(f"!getreading !xkcd [comic number]")
 
+    @commands.command()
+    async def keyboard(self, ctx: commands.Context):
+        await ctx.send("my $36 keyboard affiliate link: https://amzn.to/3Sj50ij")
+
+    @commands.command()
+    async def keyboard2(self, ctx: commands.Context):
+        await ctx.send("Transparent keyboard brand: Lofree 1% Transparent Mechanical")
+
+    @commands.command()
+    async def resources(self, ctx:commands.Context):
+        await ctx.send("Python Crash Course 2nd Ed (book), Twitch Chat, learnpython.org, datacamp, ... and a bunch of Youtube channels")
+
 
     # @commands.command()
     # async def so(self, channel, ctx:commands.Context):
@@ -175,12 +277,12 @@ class TheTimeBot(commands.Bot):
     #         timestamp()
 
     # nowtime = ((datetime.datetime.utcnow() - epoch).total_seconds()) - last_shoutout_Time
-        # if nowtime > 60:
-        #     timestamp()
-        # print(f'Shouted out {channel}')
-        # await ctx.send('BE SURE TO CHECK OUT https://twitch.tv/' + channel + " they are an awesome person")
-        # if channel in always_shoutout:
-        #     await ctx.send('BE SURE TO CHECK OUT https://twitch.tv/' + channel + " they are an awesome person")
+    # if nowtime > 60:
+    #     timestamp()
+    # print(f'Shouted out {channel}')
+    # await ctx.send('BE SURE TO CHECK OUT https://twitch.tv/' + channel + " they are an awesome person")
+    # if channel in always_shoutout:
+    #     await ctx.send('BE SURE TO CHECK OUT https://twitch.tv/' + channel + " they are an awesome person")
 
 
 class Cooldown(commands.Cooldown):
@@ -199,9 +301,9 @@ class SRThread(threading.Thread):
 
     def run(self) -> None:
         recognizer = sr.Recognizer()
-        microphone = sr. Microphone()
+        microphone = sr.Microphone()
 
-        if not isinstance(recognizer, sr. Recognizer):
+        if not isinstance(recognizer, sr.Recognizer):
             raise TypeError("'recognizer' must be 'Recognizer' instance")
 
         if not isinstance(microphone, sr.Microphone):
@@ -214,7 +316,7 @@ class SRThread(threading.Thread):
                     audio = recognizer.listen(source)
 
                     response = {
-                        "success" : True,
+                        "success": True,
                         "error": None,
                         "transcription": None
                     }
@@ -231,13 +333,9 @@ class SRThread(threading.Thread):
                     self.bot.loop.call_soon_threadsafe(self.bot.sr_message_queue.put_nowait, response)
 
 
-
 bot = TheTimeBot()
 cooldown = Cooldown()
-
 
 print(__name__)
 
 bot.run()
-
-
