@@ -1,8 +1,11 @@
 import asyncio.subprocess
+
+import pytz
 from twitchio.ext import commands
 from dotenv import load_dotenv
 from simple_chalk import chalk, green
 import datetime
+import pytz
 import os
 import logging
 import twitchio
@@ -163,6 +166,7 @@ class TheTimeBot(commands.Bot):
 
     @commands.command()
     async def ratereading(self, ctx: commands.Context, rating=""):
+        t_token = os.environ['T_TOKEN']
         author = ctx.author.name
         if not rating.isdecimal():
             await ctx.send(f"rating needs to be a number between 1-10")
@@ -170,53 +174,21 @@ class TheTimeBot(commands.Bot):
         int_num = int(rating)
         rating = max(1, min(int_num, 10))
         async with httpx.AsyncClient() as client:
-            post_request = await client.post('http://localhost:8000/tarot/twitch_reads', data={
+            post_request = await client.post('https://timeenjoyed.dev/tarot/twitch_reads', data={
                 'rating': rating,
-                'user': author})
+                'user': author,
+                't_token': t_token})
             print(rating)
             print(author)
             print(post_request)
             print(f"-")
             print(post_request.text)
-
+            with open('post_request.html', 'w') as f:
+                f.write(post_request.text)
 
             await ctx.send(f"{post_request.text}")
-            #     await ctx.send(f"{resp_text}{author}, }your rating has been saved to http://timeenjoyed.dev if you're a user")
-            # else:
-            #     await ctx.send(f"{author}, that didn't work. do you have an account?")
-    # @commands.command()
-    # # make a request to trigger a possible response
-    # # mod only
-    # async def rating(self,twitch_user= ctx.author.name):
-    #
-    #     async def rate_tarot()
-    # username in global list?
-    # or get from my request command
-
-    # @commands.command()
-    # async def rate_tarot(self, ctx: commands.Context, name=""):
-    #     if ctx.author.is_mod is True:
-    #         global person_rating
-    #         person_rating.append(name)
-    #         await ctx.send(f'Hi {ctx.author.name}, type !rating [1-10] to rate my reading.')
-
-    # @commands.command()
-    # async def rating(self, ctx: commands.Context, rating=""):
-    #     global person_rating
-    #     if ctx.author.name in person_rating:
-    #         # TODO: add name and rating to database
-    #         await ctx.send(f'@{ctx.author.name}, ty! <3 Your rating has been logged.')
 
 
-        #
-        #
-        #     user = ctx.author.name
-        # # add_rating() insert function to add user + rating to dabase
-        # print(user)
-
-    # @commands.command()
-    #
-    #     await ctx.send(f'Hi {ctx.author.name}, your rating of {tarot_rating} has been logged.')
 
     @commands.command()
     async def xkcd(self, ctx: commands.Context, comic_num=""):
@@ -267,6 +239,34 @@ class TheTimeBot(commands.Bot):
     @commands.command()
     async def resources(self, ctx:commands.Context):
         await ctx.send("Python Crash Course 2nd Ed (book), Twitch Chat, learnpython.org, datacamp, ... and a bunch of Youtube channels")
+
+    @commands.command()
+    async def tz(self, ctx:commands.Context, location=""):
+
+        germany = pytz.timezone('Europe/Berlin')
+        sydney = pytz.timezone('Australia/Sydney')
+        indonesia = pytz.timezone('Asia/Jakarta')
+        germany_now = datetime.datetime.now()
+        formatted_berlin = berlin_now.strftime("%Y-%m-%d %I:%M %p")
+        loc_dict = {'germany': formatted_berlin, 'sydney':, 'indonesia', 'india', 'moscow':
+
+            }
+        if location in loc_dict:
+            await ctx.send(f"{location}: {loc_dict['location']}")
+
+    @commands.command()
+    async def germany(self, ctx:commands.Context):
+        CET = pytz.timezone('Europe/Berlin')
+        berlin_now = datetime.datetime.now(CET)
+        formatted_berlin = berlin_now.strftime("%Y-%m-%d %I:%M %p")
+        await ctx.send(f"Europe/Berlin: {formatted_berlin}")
+
+    @commands.command()
+    async def sydney(self, ctx: commands.Context):
+         = pytz.timezone('Europe/Berlin')
+        sydney_now = datetime.datetime.now(CET)
+        formatted_berlin = berlin_now.strftime("%Y-%m-%d %I:%M %p")
+        await ctx.send(f"Europe/Berlin: {formatted_berlin}")
 
 
     # @commands.command()
