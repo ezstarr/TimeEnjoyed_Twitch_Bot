@@ -6,10 +6,13 @@ from dotenv import load_dotenv
 from simple_chalk import chalk, green
 import datetime
 import pytz
+from timezonefinder import TimezoneFinder
+from geopy.geocoders import Nominatim
 import os
 import logging
 import twitchio
 import httpx
+import requests
 # import counter
 import random
 from plugins import xkcd, tarotreading
@@ -241,49 +244,33 @@ class TheTimeBot(commands.Bot):
         await ctx.send("Python Crash Course 2nd Ed (book), Twitch Chat, learnpython.org, datacamp, ... and a bunch of Youtube channels")
 
     @commands.command()
-    async def tz(self, ctx:commands.Context, location=""):
+    async def tz(self, ctx:commands.Context, *args):
+        # Use geopy to get the latitude and longitude of the location
+        # tuple_args = args  # (los, angeles)
+        author = ctx.author.name
+        location_input = ' '.join(args)
+        tzfinder = TimezoneFinder()
+        geolocator = Nominatim(user_agent="thetimebot")
+        location = geolocator.geocode(location_input)
+        if location is None:
+            await ctx.send("Try a real location plzkthx ^^")
+        else:
+            # Use geopy to get the location information (including country code) based on the latitude and longitude
+            latitude = location.latitude
+            longitude = location.longitude
 
-        germany = pytz.timezone('Europe/Berlin')
-        sydney = pytz.timezone('Australia/Sydney')
-        indonesia = pytz.timezone('Asia/Jakarta')
-        germany_now = datetime.datetime.now()
-        formatted_berlin = berlin_now.strftime("%Y-%m-%d %I:%M %p")
-        loc_dict = {'germany': formatted_berlin, 'sydney':, 'indonesia', 'india', 'moscow':
+            # timezoneFinder to get the location
+            timezone_2 = pytz.timezone(tzfinder.timezone_at(lat=latitude, lng=longitude))
+            location_info = geolocator.reverse((location.latitude, location.longitude), exactly_one=True, language="en")
+            address = location_info.raw['address']  #returns dict
+            city = address.get('city')
+            state = address.get('state')
+            country = address.get('country')
 
-            }
-        if location in loc_dict:
-            await ctx.send(f"{location}: {loc_dict['location']}")
+            # Get the current time in the timezone of the location
+            now = datetime.datetime.now(timezone_2)
 
-    @commands.command()
-    async def germany(self, ctx:commands.Context):
-        CET = pytz.timezone('Europe/Berlin')
-        berlin_now = datetime.datetime.now(CET)
-        formatted_berlin = berlin_now.strftime("%Y-%m-%d %I:%M %p")
-        await ctx.send(f"Europe/Berlin: {formatted_berlin}")
-
-    @commands.command()
-    async def sydney(self, ctx: commands.Context):
-         = pytz.timezone('Europe/Berlin')
-        sydney_now = datetime.datetime.now(CET)
-        formatted_berlin = berlin_now.strftime("%Y-%m-%d %I:%M %p")
-        await ctx.send(f"Europe/Berlin: {formatted_berlin}")
-
-
-    # @commands.command()
-    # async def so(self, channel, ctx:commands.Context):
-    #     """under construction"""
-    #     global last_shoutout_Time
-    #     if last_shoutout_Time == 0:
-    #         timestamp()
-
-    # nowtime = ((datetime.datetime.utcnow() - epoch).total_seconds()) - last_shoutout_Time
-    # if nowtime > 60:
-    #     timestamp()
-    # print(f'Shouted out {channel}')
-    # await ctx.send('BE SURE TO CHECK OUT https://twitch.tv/' + channel + " they are an awesome person")
-    # if channel in always_shoutout:
-    #     await ctx.send('BE SURE TO CHECK OUT https://twitch.tv/' + channel + " they are an awesome person")
-
+            await ctx.send("@{}, Current time in {}, {}, {}: {}".format(author, city, state, country, now.strftime("%I:%M %p, %m-%d-%Y")))
 
 class Cooldown(commands.Cooldown):
     def __init__(self):
