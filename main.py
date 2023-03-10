@@ -4,10 +4,12 @@ import pytz
 from twitchio.ext import commands
 from dotenv import load_dotenv
 from simple_chalk import chalk, green
+
 import datetime
 import pytz
 from timezonefinder import TimezoneFinder
 from geopy.geocoders import Nominatim
+
 import os
 import logging
 import twitchio
@@ -72,6 +74,7 @@ class TheTimeBot(commands.Bot):
         # initial_channels can also be callable
 
         super().__init__(token, prefix='!', initial_channels=[user_channel])
+        self.start_time = None
         self.sr_message_queue: asyncio.Queue = asyncio.Queue()
         SRThread(self).start()
         self.loop.create_task(self.sr_listen())
@@ -270,6 +273,42 @@ class TheTimeBot(commands.Bot):
             # Get the current time in the timezone of the location
             now = datetime.datetime.now(timezone_2)
             await ctx.send("@{}, Current time in {}: {}".format(author, ", ".join(val for val in (city, state, country) if val), now.strftime("%I:%M %p, %m-%d-%Y")))
+
+    @commands.command()
+    async def starttimer(self, ctx:commands.Context):
+        if ctx.author.name.lower() == 'timeenjoyed':
+            if self.start_time is None:
+                self.start_time = datetime.datetime.now()
+                await ctx.send(f"Timer starting at {self.start_time}")
+            else:
+                await ctx.send(f"You already have a timer running")
+        else:
+            await ctx.send("You're not the streamer, sorry!")
+
+    @commands.command()
+    async def currenttimer(self, ctx:commands.Context):
+        if ctx.author.name.lower() == 'timeenjoyed':
+            if self.start_time:
+                now = datetime.datetime.now()
+                diff = now - self.start_time
+                await ctx.send(f"Current timer at {diff}")
+            else:
+                await ctx.send("Timer not started")
+        else:
+            await ctx.send("You're not the streamer, sorry!")
+
+    @commands.command()
+    async def stoptimer(self, ctx:commands.Context):
+        if ctx.author.name.lower() == 'timeenjoyed':
+            if self.start_time:
+                stop = datetime.datetime.now()
+                difference = stop - self.start_time
+                self.start_time = None
+                await ctx.send(f"{difference}")
+            else:
+                await ctx.send("Timer not started")
+        else:
+            await ctx.send("You're not the streamer, sorry!")
 
 
 class Cooldown(commands.Cooldown):
