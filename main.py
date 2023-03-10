@@ -269,8 +269,8 @@ class TheTimeBot(commands.Bot):
 
             # Get the current time in the timezone of the location
             now = datetime.datetime.now(timezone_2)
+            await ctx.send("@{}, Current time in {}: {}".format(author, ", ".join(val for val in (city, state, country) if val), now.strftime("%I:%M %p, %m-%d-%Y")))
 
-            await ctx.send("@{}, Current time in {}, {}, {}: {}".format(author, city, state, country, now.strftime("%I:%M %p, %m-%d-%Y")))
 
 class Cooldown(commands.Cooldown):
     def __init__(self):
