@@ -19,6 +19,7 @@ import requests
 import random
 from plugins import xkcd, tarotreading
 from count_database import trigger_a_count, return_test_number
+from command_count_table import add_command_count, return_command_total
 # for sp recognition:
 import threading
 import speech_recognition as sr
@@ -128,6 +129,27 @@ class TheTimeBot(commands.Bot):
         await ctx.send(f"TimeEnjoyed said test {total} times.")
         # total = trigger_a_count()
         # await ctx.send(f"Speech Recognition heard 'test' {total} times")
+
+    @commands.command()
+    async def typo(self, ctx: commands.Context, argument=""):
+        """ This command instantiates a typo object and returns """
+        command = "typo"
+        author = ctx.author.name.lower()
+        argument = argument
+        date_logged = datetime.datetime.now()
+        if argument is None:
+            await ctx.send(f"@{author}, try !typo <witnessed typo>")
+        else:
+            add_command_count(command, author, argument, date_logged)
+            await ctx.send(f"@{author}, Typo '{argument}' Saved")
+
+
+    @commands.command()
+    async def typos(self, ctx:commands.Context):
+        author = ctx.author.name.lower()
+        total = return_command_total()
+        await ctx.send(f"@{author}, {total} typos logged")
+
 
     @commands.command()
     async def soc(self, ctx: commands.Context):
@@ -272,7 +294,7 @@ class TheTimeBot(commands.Bot):
 
             # Get the current time in the timezone of the location
             now = datetime.datetime.now(timezone_2)
-            await ctx.send("@{}, Current time in {}: {}".format(author, ", ".join(val for val in (city, state, country) if val), now.strftime("%I:%M %p, %m-%d-%Y")))
+            await ctx.send("@{}, Current time in {}: {}".format(author, ", ".join(val for val in (city, state, country) if val), now.strftime("%I:%M %p, %A, %d %B %Y")))
 
     @commands.command()
     async def starttimer(self, ctx:commands.Context):
@@ -309,6 +331,8 @@ class TheTimeBot(commands.Bot):
                 await ctx.send("Timer not started")
         else:
             await ctx.send("You're not the streamer, sorry!")
+
+
 
 
 class Cooldown(commands.Cooldown):
