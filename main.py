@@ -93,7 +93,6 @@ class TheTimeBot(commands.Bot):
         # await channel.send("Hi guys. This is my lame draft greeting -_-. Ugh. Under construction")
 
 
-
     async def sr_listen(self) -> None:
         await self.wait_for_ready()
         channel = self.get_channel(user_channel)
