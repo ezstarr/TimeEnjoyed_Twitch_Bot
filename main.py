@@ -162,6 +162,13 @@ class TheTimeBot(commands.Bot):
         await ctx.send('BE SURE TO CHECK OUT https://twitch.tv/' + channel + ' they are an awesome person')
 
     @commands.command()
+    async def kudos(self, ctx: commands.Context, channel):
+        if ctx.author.name.lower() == 'timeenjoyed':
+            await ctx.send('THANK YOU SO MUCH https://twitch.tv/' + channel + ' Esther thinks you are a superstar <3')
+        else:
+            await ctx.send('Thanks for the help https://twitch.tv/' + channel + ' you are very helpful person')
+       
+    @commands.command()
     async def mbti(self, ctx: commands.Context):
         await ctx.send(f'https://www.16personalities.com/free-personality-test')
 
@@ -250,10 +257,6 @@ class TheTimeBot(commands.Bot):
     async def raid2(self, ctx: commands.Context):
         await ctx.send(
             f"timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid")
-
-    @commands.command()
-    async def bot_commands(self, ctx: commands.Context):
-        await ctx.send(f"!getreading !xkcd [comic number]")
 
     @commands.command()
     async def keyboard(self, ctx: commands.Context):
