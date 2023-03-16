@@ -252,10 +252,6 @@ class TheTimeBot(commands.Bot):
             f"timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid")
 
     @commands.command()
-    async def bot_commands(self, ctx: commands.Context):
-        await ctx.send(f"!getreading !xkcd [comic number]")
-
-    @commands.command()
     async def keyboard(self, ctx: commands.Context):
         await ctx.send("my $36 keyboard affiliate link: https://amzn.to/3Sj50ij")
 
