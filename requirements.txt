@@ -73,3 +73,6 @@ Werkzeug==1.0.1
 xkcd-wrapper==1.0.1
 yarl==1.7.2
 zope.interface==5.4.0
+
+twitchio~=2.2.0
+geopy~=2.3.0

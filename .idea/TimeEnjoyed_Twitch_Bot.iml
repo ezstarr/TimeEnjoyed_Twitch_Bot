@@ -7,10 +7,6 @@
     <orderEntry type="jdk" jdkName="Python 3.10 (TimeEnjoyed_Twitch_Bot)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Chapter 12" />
-    <orderEntry type="module" module-name="CodewarsSolutions" />
-    <orderEntry type="module" module-name="SidewaysShooter" />
-    <orderEntry type="module" module-name="timeenjoyeddiscordbot" />
-    <orderEntry type="module" module-name="Flask Website" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />

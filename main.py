@@ -15,7 +15,7 @@ import logging
 import twitchio
 import httpx
 import requests
-# import counter
+
 import random
 from plugins import xkcd, tarotreading
 from count_database import trigger_a_count, return_test_number
@@ -44,7 +44,6 @@ logging.basicConfig(level=logging.INFO)
 # Helps keep track of time
 epoch = datetime.datetime.utcfromtimestamp(0)
 last_shoutout_Time = 0
-always_shoutout = ['xmetrix']
 bot_name = "TheTimeBot"
 user_channel = 'timeenjoyed'
 
@@ -81,8 +80,6 @@ class TheTimeBot(commands.Bot):
         self.loop.create_task(self.sr_listen())
 
     async def event_ready(self):
-        """This function is an example of an event"""
-        "Called once the bot goes online"
         # Is logged in and ready to use commands
         print(green(f'Logged in as | {self.nick}'))
         print(f'User id is | {self.user_id}')
@@ -90,24 +87,25 @@ class TheTimeBot(commands.Bot):
     async def event_channel_joined(self, channel: twitchio.Channel):
         selected_greeting = random.choice(greetings)
         await channel.send(selected_greeting)
-        # await channel.send("Hi guys. This is my lame draft greeting -_-. Ugh. Under construction")
-
 
     async def sr_listen(self) -> None:
         await self.wait_for_ready()
         channel = self.get_channel(user_channel)
         while True:
+            print("true")
             response = await self.sr_message_queue.get()
+            print(response)
             if response['transcription'] is None:
+                print("this is alive")
                 continue
 
-            if 'pamphlet' in response['transcription']:
-                print(response['transcription'])
-                await channel.send('!time')
-
-            if 'carpet' in response['transcription']:
-                print(response['transcription'])
-                await channel.send("!test")
+            # if 'time' in response['transcription']:
+            #     print(response['transcription'])
+            #     await channel.send('!time')
+            #
+            # if 'test' in response['transcription']:
+            #     print(response['transcription'])
+            #     await channel.send("!test")
 
             if 'meta' in response['transcription']:
                 print(response['transcription'])
@@ -121,13 +119,15 @@ class TheTimeBot(commands.Bot):
                 keyboard.release('2')
                 # await channel.send("!meta")
 
+    # @commands.command()
+    # async def test(self, ctx: commands.Context):
+    #     trigger_a_count()
+    #     total = return_test_number()
+    #     await ctx.send(f"TimeEnjoyed said test {total} times.")
+
     @commands.command()
-    async def test(self, ctx: commands.Context):
-        a_trigger = trigger_a_count()
-        total = return_test_number()
-        await ctx.send(f"TimeEnjoyed said test {total} times.")
-        # total = trigger_a_count()
-        # await ctx.send(f"Speech Recognition heard 'test' {total} times")
+    async def submissions(self, ctx: commands.Context):
+        await ctx.send(f"All the codejam submissions are listed @ https://timeenjoyed.codejam.io/")
 
     @commands.command()
     async def typo(self, ctx: commands.Context, argument=""):
@@ -175,17 +175,17 @@ class TheTimeBot(commands.Bot):
     async def clan(self, ctx: commands.Context):
         await ctx.send(f"Join our codewars clan: 'TimeEnjoyedCoding' :)")
 
-    @commands.command()
-    async def aoc(self, ctx: commands.Context):
-        await ctx.send(f"private leaderboard join code: '2267208-c2779062'")
+    # @commands.command()
+    # async def aoc(self, ctx: commands.Context):
+    #     await ctx.send(f"private leaderboard join code: '2267208-c2779062'")
 
-    @commands.command()
-    async def survey(self, ctx: commands.Context):
-        await ctx.send(f"https://forms.gle/wVG9Sv1Ahjn4CNUD7")
+    # @commands.command()
+    # async def survey(self, ctx: commands.Context):
+    #     await ctx.send(f"https://forms.gle/wVG9Sv1Ahjn4CNUD7")
 
     @commands.command()
     async def discord(self, ctx: commands.Context):
-        await ctx.send(f"https://discord.gg/K9hEvJABYy")
+        await ctx.send(f"https://discord.gg/timeenjoyed")
 
     @commands.command()
     async def enneagram(self, ctx: commands.Context):
@@ -214,6 +214,35 @@ class TheTimeBot(commands.Bot):
                 f.write(post_request.text)
 
             await ctx.send(f"{post_request.text}")
+
+    # @commands.command()  # !tarot <username> fool
+    # async def tarot_save(self, ctx, username: str, *cards):
+    #     t_token = os.environ['T_TOKEN']
+    #     # async with httpx.AsyncClient() as client:
+    #     #     post_request = await client.post('https://timeenjoyed.dev/tarot/twitch_saves', data={
+    #     #         'username': username,
+    #     #         'card_names': cards,
+    #     #         't_token': t_token})
+
+        """Some code that unpacks cards and checks it against an array, and returns a code for each card"""
+        """url.dev/username={username}/"""
+
+
+
+        # arg_list = arguement.split(' ')
+        # if len(arg_list) == 2:
+        #     querant, cards = arg_list[0], arg_list[1]
+        #
+        # else:
+        #     await ctx.send(f"missing space")
+        #
+        # t_token = os.environ['T_TOKEN']
+        #
+        # async with httpx.AsyncClient() as client:
+        #     post_request = await client.post('https://timeenjoyed.dev/tarot/twitch_reads', data={
+        #         'rating': rating,
+        #         'user': author,
+        #         't_token': t_token})
 
 
 
@@ -255,12 +284,17 @@ class TheTimeBot(commands.Bot):
     async def bot_commands(self, ctx: commands.Context):
         await ctx.send(f"!getreading !xkcd [comic number]")
 
-    @commands.command()
-    async def keyboard(self, ctx: commands.Context):
-        await ctx.send("my $36 keyboard affiliate link: https://amzn.to/3Sj50ij")
 
     @commands.command()
-    async def keyboard2(self, ctx: commands.Context):
+    async def plant(self, ctx: commands.Context):
+        await ctx.send(f"?plant, ?water, ?attack, ?thug")
+
+    @commands.command()
+    async def keyboard(self, ctx: commands.Context):
+        await ctx.send("my Punkston TH61 60% Mechanical Gaming Keyboard: https://amzn.to/3Sj50ij (may be unavailable)")
+
+    @commands.command()
+    async def keyboard1(self, ctx: commands.Context):
         await ctx.send("Transparent keyboard brand: Lofree 1% Transparent Mechanical")
 
     @commands.command()

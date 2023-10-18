@@ -12,7 +12,7 @@ source_dir = source_path.parent
 recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 
-#print(sr.Microphone.list_microphone_names())
+print(sr.Microphone.list_microphone_names())
 
 # TODO: While ON (make "on" command).
 # TODO: End when off (make "off" command).
@@ -55,12 +55,12 @@ async def recognize_speech_from_mic(recognizer, microphone):
                 response["transcription"] = recognizer.recognize_google(audio)
                 if "hello" in response["transcription"].lower():
                     print(json.dumps(response))
-                #     hello += 1
-                #     sr_counts = trigger_a_count()
-                #     print(f"the number of hello's is {hello}")
-                # if "stop listening" in response["transcription"].lower():
-                #     print("it's stopping now")
-                #     break
+                    hello += 1
+                    sr_counts = trigger_a_count()
+                    print(f"the number of hello's is {hello}")
+                if "stop listening" in response["transcription"].lower():
+                    print("it's stopping now")
+                    break
             except sr.RequestError:
                 # API was unreachable or unresponsive
                 response["success"] = False
@@ -75,6 +75,6 @@ async def recognize_speech_from_mic(recognizer, microphone):
 
 recognize_speech_from_mic()
 
-# if __name__ == "__main__":
-#     recognize_speech_from_mic(recognizer, microphone)
-# print(__name__)
+if __name__ == "__main__":
+    recognize_speech_from_mic(recognizer, microphone)
+print(__name__)

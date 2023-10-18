@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# test files
+*.test.py
+*.post_request.html
+*.streamelements_request.py
+
 # Distribution / packaging
 .Python
 build/
@@ -26,6 +31,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.idea
+.idea/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
