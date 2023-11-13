@@ -175,10 +175,10 @@ class TheTimeBot(commands.Bot):
     async def clan(self, ctx: commands.Context):
         await ctx.send(f"Join our codewars clan: 'TimeEnjoyedCoding' :)")
 
-    # @commands.command()
-    # async def aoc(self, ctx: commands.Context):
-    #     await ctx.send(f"private leaderboard join code: '2267208-c2779062'")
-
+    @commands.command()
+    async def aoc(self, ctx: commands.Context):
+        await ctx.send(f"private leaderboard join code: '2267539-b8b2d934'")
+    #
     # @commands.command()
     # async def survey(self, ctx: commands.Context):
     #     await ctx.send(f"https://forms.gle/wVG9Sv1Ahjn4CNUD7")
