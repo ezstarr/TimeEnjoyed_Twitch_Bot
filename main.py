@@ -188,6 +188,11 @@ class TheTimeBot(commands.Bot):
         await ctx.send(f"https://discord.gg/timeenjoyed")
 
     @commands.command()
+    async def today(self, ctx: commands.Context):
+        await ctx.send(f"As of Nov 2023, working on D&D page using Next-Discord-Supabase. Keepsake of players/characters and session info.")
+
+
+    @commands.command()
     async def enneagram(self, ctx: commands.Context):
         await ctx.send(f"This enneagram test takes about 15 mins: https://similarminds.com/enneagram-test.html")
 
