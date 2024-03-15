@@ -42,7 +42,7 @@ Pillow==9.1.1
 pipwin==0.5.2
 platformdirs==2.5.2
 py==1.8.2
-PyAudio @ file:///C:/Users/xiaox/pipwin/PyAudio-0.2.11-cp310-cp310-win_amd64.whl
+# PyAudio @ file:///C:/Users/xiaox/pipwin/PyAudio-0.2.11-cp310-cp310-win_amd64.whl
 pygame==2.1.2
 pyjsparser==2.7.1
 pynput==1.7.6

@@ -14,7 +14,6 @@ import os
 import logging
 import twitchio
 import httpx
-import requests
 
 import random
 from plugins import xkcd, tarotreading
@@ -23,6 +22,12 @@ from command_count_table import add_command_count, return_command_total
 # for sp recognition:
 import threading
 import speech_recognition as sr
+
+# OBS Stuff...
+import simpleobsws
+from OBS import OBSWebsocket
+
+from serverwebsocket import ServerSocket
 
 # ===============
 from pynput.keyboard import Key, Controller
@@ -78,6 +83,8 @@ class TheTimeBot(commands.Bot):
         self.sr_message_queue: asyncio.Queue = asyncio.Queue()
         SRThread(self).start()
         self.loop.create_task(self.sr_listen())
+        
+        self.obs: OBSWebsocket | None = None
 
     async def event_ready(self):
         # Is logged in and ready to use commands
@@ -92,11 +99,9 @@ class TheTimeBot(commands.Bot):
         await self.wait_for_ready()
         channel = self.get_channel(user_channel)
         while True:
-            print("true")
             response = await self.sr_message_queue.get()
-            print(response)
+            #print(response)
             if response['transcription'] is None:
-                print("this is alive")
                 continue
 
             # if 'time' in response['transcription']:
@@ -108,7 +113,7 @@ class TheTimeBot(commands.Bot):
             #     await channel.send("!test")
 
             if 'meta' in response['transcription']:
-                print(response['transcription'])
+                # print(response['transcription'])
                 keyboard.press(Key.ctrl_l)
                 keyboard.press(Key.alt_l)
                 keyboard.press(Key.shift)
@@ -119,11 +124,6 @@ class TheTimeBot(commands.Bot):
                 keyboard.release('2')
                 # await channel.send("!meta")
 
-    # @commands.command()
-    # async def test(self, ctx: commands.Context):
-    #     trigger_a_count()
-    #     total = return_test_number()
-    #     await ctx.send(f"TimeEnjoyed said test {total} times.")
 
     @commands.command()
     async def submissions(self, ctx: commands.Context):
@@ -148,6 +148,10 @@ class TheTimeBot(commands.Bot):
         author = ctx.author.name.lower()
         total = return_command_total()
         await ctx.send(f"@{author}, {total} typos logged")
+
+    @commands.command()
+    async def vote(self, ctx:commands.Context):
+        await ctx.send(f"vote for timeenjoyed on https://thestreamerawards.com/nominations [software and game dev category (new)] - thank you!")
 
 
     @commands.command()
@@ -189,7 +193,10 @@ class TheTimeBot(commands.Bot):
 
     @commands.command()
     async def today(self, ctx: commands.Context):
-        await ctx.send(f"As of Nov 2023, working on D&D page using Next-Discord-Supabase. Keepsake of players/characters and session info.")
+        await ctx.send(
+            f"Building a ticket reporting system with NextJS + Tailwind + Typescript")
+        # await ctx.send(
+        #     f"As of Nov 2023, working on D&D page using Next-Discord-Supabase. Keepsake of players/characters and session info.")
 
 
     @commands.command()
@@ -286,7 +293,7 @@ class TheTimeBot(commands.Bot):
             f"timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid What is the raid message? timeenRaid")
 
     @commands.command()
-    async def bot_commands(self, ctx: commands.Context):
+    async def cmds(self, ctx: commands.Context):
         await ctx.send(f"!getreading !xkcd [comic number]")
 
 
@@ -370,7 +377,30 @@ class TheTimeBot(commands.Bot):
         else:
             await ctx.send("You're not the streamer, sorry!")
 
-
+    @commands.command()
+    async def focus(self, ctx: commands.Context, reset: bool = False) -> None:
+        if not ctx.author.is_mod:
+            return
+        
+        if not self.obs:
+            await ctx.send("OBS is not connected")
+            return
+        
+        response: simpleobsws.Response = await self.obs.send("GetSceneItemList", {"sceneName": "== Focus Mode (5m)"})
+        data: dict[str, str] = response.responseData
+        
+        for item in data["sceneItems"]:
+            await self.obs.send(
+                "SetSceneItemEnabled",
+                {
+                    "sceneName": "== Focus Mode (5m)",
+                    "sceneItemId": item["sceneItemId"],
+                    "sceneItemEnabled": not item["sceneItemEnabled"]
+                }
+            )
+        
+        # TODO: Reset logic thingy...
+        await ctx.reply("Focus mode toggled")
 
 
 class Cooldown(commands.Cooldown):
@@ -421,9 +451,30 @@ class SRThread(threading.Thread):
                     self.bot.loop.call_soon_threadsafe(self.bot.sr_message_queue.put_nowait, response)
 
 
-bot = TheTimeBot()
 cooldown = Cooldown()
 
 print(__name__)
 
-bot.run()
+
+async def main():
+    # asyncio.run(asyncio.sleep(10)) 
+    
+    # can stack async with ... serverwebsocket as serverws
+
+    # we can initialise the bot here...
+    # And pass it to the websocket...
+    # bot: TheTimeBot = TheTimeBot()
+    # Intead of doing it in the context manager, we can do it here...
+    # Then in the CM where we have the serverwebsocket, we can pass the bot to it...
+    bot: TheTimeBot = TheTimeBot()
+    async with \
+        OBSWebsocket(host="localhost", port=4444, password="password") as obs, \
+        ServerSocket(uri='wss://bot.timeenjoyed.dev/websockets/connect', bot=bot):  # Here we can pass bot to the serverwebsocket; bot=bot
+            bot.obs = obs
+            await bot.start()
+        
+
+asyncio.run(main())
+print("FINSIHED FAM")
+
+    

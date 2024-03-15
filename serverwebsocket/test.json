@@ -1,0 +1,44 @@
+
+
+          data='{
+  "op": 1,
+  "d": {
+    "event": "eventsub",
+    "data": {
+      "subscription": {
+        "id": "21bc9b59-2fad-4d9e-b135-7f0f058bbeaa",
+        "status": "enabled",
+        "type": "channel.channel_points_custom_reward_redemption.add",
+        "version": "1",
+        "condition": {
+          "broadcaster_user_id": "410885037",
+          "reward_id": ""
+        },
+        "transport": {
+          "method": "webhook",
+          "callback": "https://bot.timeenjoyed.dev/eventsub/callback"
+        },
+        "created_at": "2023-11-23T06:06:45.775530268Z",
+        "cost": 0
+      },
+      "event": {
+        "broadcaster_user_id": "410885037",
+        "broadcaster_user_login": "timeenjoyed",
+        "broadcaster_user_name": "TimeEnjoyed",
+        "id": "180d03ab-7083-4daf-be1c-08cc7571e522",
+        "user_id": "1024780020",
+        "user_login": "rvynrgl2",
+        "user_name": "rvynrgl2",
+        "user_input": "https://www.youtube.com/watch?v=47HN6xOwphA",
+        "status": "unfulfilled",
+        "redeemed_at": "2024-03-08T01:14:27.983578746Z",
+        "reward": {
+          "id": "1069c6b6-2fe4-4dec-8f21-6347ddf18b53",
+          "title": "Play this song",
+          "prompt": "Enter a song search or URL to play.",
+          "cost": 1
+        }
+      }
+    }
+  }
+}', extra='')

@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# random files
+img-bigface.png
+img-mystypy.png
+img-therealkroden.png
+img-timeenjoyed.png
+
 # C extensions
 *.so
 
@@ -10,6 +16,9 @@ __pycache__/
 *.test.py
 *.post_request.html
 *.streamelements_request.py
+
+# token
+wb-token.txt
 
 # Distribution / packaging
 .Python
@@ -116,6 +125,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv311/
 
 # Spyder project settings
 .spyderproject
