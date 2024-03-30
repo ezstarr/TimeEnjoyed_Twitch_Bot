@@ -164,21 +164,20 @@ class ServerSocket:
                     asyncio.create_task(self.process_redeem(eventsub))
                 
                 elif event_type == "channel.subscribe" \
-                  or event_type == "channel.subscription.message":
-                    asyncio.create_task(self.process_subscription)
+                or event_type == "channel.subscription.message":
+                    asyncio.create_task(self.process_subscription(eventsub))
 
     async def fetch_image_bytes(self, url):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 response.raise_for_status() # Ensure the request was successful
                 image_bytes = await response.read()
-                print(image_bytes)
+                # print(image_bytes)
                 fp: io.BytesIO = io.BytesIO(image_bytes)
                 # ensures the next read operation/file pointer starts from beginning
                 fp.seek(0)
                 return fp
         
-
     async def process_redeem(self, eventsub):
         reward_name: str = eventsub["event"]["reward"]["title"]
         # TODO: PNG_REWARD: str = "PNG <-> FaceCam"
@@ -187,6 +186,7 @@ class ServerSocket:
             print("============================ A REDEEM")
             
             redeemer_id = int(eventsub["event"]["user_id"])
+
             print(f"redeemer_ int: {redeemer_id}")
             twitch_user_list: list[twitchio.User] = await self.bot.fetch_users(ids=[redeemer_id])
             logger.info(str(twitch_user_list))
@@ -198,37 +198,36 @@ class ServerSocket:
             self.pfp_img = await self.fetch_image_bytes(pfp_url)
             await self.queue.put(self.pfp_img)
 
-                      
+
     async def process_subscription(self, eventsub):
-          
+        # step 1: print subscriber's profile picture
+
         subscriber_id = int(eventsub["event"]["user_id"])
         subscriber_name = eventsub["event"]["user_name"]
         subscribe_tier = eventsub["event"]["tier"]
 
-        twitch_user_list: list[twitchio.User] = await self.bot.fetch_users([subscriber_id])
+        twitch_user_list: list[twitchio.User] = await self.bot.fetch_users(ids=[subscriber_id])
         logger.info(str(twitch_user_list))
+        pfp_url = twitch_user_list[0].profile_image
 
         # if there's a message, grab the message
-        if data["d"]["data"]["event"]["message"]:
-            subscriber_msg = data["d"]["data"]["event"]["message"]
+        if eventsub["event"].get("message", None) is not None:
+            subscriber_msg = eventsub["event"]["message"]
 
-        # item_data = [subscriber_id, subscriber_name, subscribe_tier]
-        fake_data = ["timeenjoyed", "123"]
+        # evenutally will be something like: item_data = [subscriber_id, subscriber_name, subscribe_tier]
+        # for now, just printing pic, TODO: add message and generate PIL image
+        self.pfp_img = await self.fetch_image_bytes(pfp_url)
+        await self.queue.put(self.pfp_img)
 
-
-                # I removed the outer await self.queue.put() since it will add data everytime a message is received...
                 
     async def process_queue_items(self) -> None:
+        # step 2: print subscriber's profile picture 
         """Takes items from the queue and sends it to the printer to be printed"""
         logger.info("Started queue processor for the printer")
         
         while True:
             # Wait for an item to be available in the queue
             item = await self.queue.get()
-            print("got item from the queue in line 225.")
-
-            # Process the item (e.g., send it to the Bluetooth printer)
-            # This is a placeholder for your actual processing logic
             
             # basic flag cause I am a basic biatch (mysty)
             self.processing = True # HERE
@@ -241,21 +240,11 @@ class ServerSocket:
 
             await asyncio.sleep(1)
             self.processing = False
-                
-            thing = await self.printer.load_image(item)
-            print(thing)
 
             # then continue waiting.. forever.. because this loop will continue to wait for the next event
-          
             # op 0 - HELLO (handshake)
             # op 1 - EVENT (data for the event)
             # op 2 - NOTIFICATION (tells me everything except data for the event, and a type key which informs type of notification)
-              
-            # TODO: make sure it reconnects if it loses connection
-              
-            
-
-
 
 
 """
