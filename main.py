@@ -123,7 +123,9 @@ class TheTimeBot(commands.Bot):
                 keyboard.release(Key.shift)
                 keyboard.release('2')
                 # await channel.send("!meta")
-
+    @commands.command()
+    async def codejam(self, ctx: commands.Context):
+        await ctx.send(f"All the codejam submissions are listed @ https://timeenjoyed.codejam.io/")
 
     @commands.command()
     async def submissions(self, ctx: commands.Context):
@@ -186,10 +188,6 @@ class TheTimeBot(commands.Bot):
     # @commands.command()
     # async def survey(self, ctx: commands.Context):
     #     await ctx.send(f"https://forms.gle/wVG9Sv1Ahjn4CNUD7")
-
-    @commands.command()
-    async def discord(self, ctx: commands.Context):
-        await ctx.send(f"https://discord.gg/timeenjoyed")
 
     @commands.command()
     async def today(self, ctx: commands.Context):
@@ -401,6 +399,35 @@ class TheTimeBot(commands.Bot):
         
         # TODO: Reset logic thingy...
         await ctx.reply("Focus mode toggled")
+
+    #TODO: Veadotube mini
+    # Set as scene in OBS
+
+    @commands.command()
+    async def png(self, ctx: commands.Context) -> None:
+        if not ctx.author.is_mod:
+            return
+        
+        if not self.obs: 
+            await ctx.send("OBS is not connected")
+
+        response: simpleobsws.Response = await self.obs.send("GetSceneItemList", {"sceneName": "= png/face copy"})
+        print(response, "<-response")
+        data: dict[str, str] = response.responseData
+
+        print(data)
+
+        for item in data["sceneItems"]:
+            await self.obs.send(
+                "SetSceneItemEnabled", 
+                {
+                    "sceneName": "= png/face copy",
+                    "sceneItemId": item["sceneItemId"],
+                    "sceneItemEnabled": not item["sceneItemEnabled"]
+                }
+            )
+        await ctx.reply("PNG<->cam toggled")
+
 
 
 class Cooldown(commands.Cooldown):
