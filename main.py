@@ -501,7 +501,9 @@ async def main():
             await bot.start()
         
 
-asyncio.run(main())
-print("FINSIHED FAM")
+try:
+    asyncio.run(main())
+except KeyboardInterrupt:
+    logging.warning("Shutting down due to KeyboardInterrupt...")
 
     

@@ -9,39 +9,36 @@ with open('wb-token.txt') as f:
 queue = asyncio.Queue()
 
 async def process_queue_items():
-  while True:
-      # Wait for an item to be available in the queue
-      item = await queue.get()
+    while True:
+        # Wait for an item to be available in the queue
+        item = await queue.get()
 
-      
-      # Process the item (e.g., send it to the Bluetooth printer)
-      # This is a placeholder for your actual processing logic
-      print(f"Processing item: {item}")
+        # Process the item (e.g., send it to the Bluetooth printer)
+        # This is a placeholder for your actual processing logic
+        print(f"Processing item: {item}")
 
-      # then continue waiting.. forever.. because this loop will continue to wait for the next event
-      
-
+        # then continue waiting.. forever.. because this loop will continue to wait for the next event
 # Coroutine to handle WebSocket messages and put them into the queue
 async def handle_websocket_messages(session):
-  item_data: list[str | None] = []
+    item_data: list[str | None] = []
 
-  # sending a handshake to the server-bot (ws url), if it connects, server sends handshake back 
-  async with session.ws_connect("wss://bot.timeenjoyed.dev/websockets/connect") as ws:
-      
-      # Next line is where client (this bot) subscribes to events in the serverbot
-      # ws is a WebsocketClientResponse
-      await ws.send_json({"op": "subscribe", "d": {"subscription": "eventsub"}})
+    # sending a handshake to the server-bot (ws url), if it connects, server sends handshake back 
+    async with session.ws_connect("wss://bot.timeenjoyed.dev/websockets/connect") as ws:
 
-      async for msg in ws:
-          print(msg)
+        # Next line is where client (this bot) subscribes to events in the serverbot
+        # ws is a WebsocketClientResponse
+        await ws.send_json({"op": "subscribe", "d": {"subscription": "eventsub"}})
+
+    async for msg in ws:
+        print(msg)
         
-          data: dict[str, Any] = json.loads(msg.data)
+        data: dict[str, Any] = json.loads(msg.data)
 
-          op_value = data["op"]
-          print(f"op:  {op_value}")
+        op_value = data["op"]
+        print(f"op:  {op_value}")
 
-          # if the operation received from the websocket is an event (1), get the event/subscription type.
-          if op_value == 1:
+        # if the operation received from the websocket is an event (1), get the event/subscription type.
+        if op_value == 1:
             fake_data = "==this is fake data without being touched, just for testing=="
 
             # Extract "type" from the the data recevied from the websocket subscription, of twitch channel subscriptions
@@ -59,15 +56,15 @@ async def handle_websocket_messages(session):
                 # item_data = [subscriber_id, subscriber_name, subscribe_tier]
                 fake_data = ["timeenjoyed", "123"]
             await queue.put(fake_data)
-      # op 0 - HELLO (handshake)
-      # op 1 - EVENT (data for the event)
-      # op 2 - NOTIFICATION (tells me everything except data for the event, and a type key which informs type of notification)
-          
-      # TODO: make sure it reconnects if it loses connection
-          
-      # TODO: if the msg has channel.subscribe in it.... 
-          # get info about the subscriber 
-          # create a asyncio.Queue to loop, and send the data through it.
+    # op 0 - HELLO (handshake)
+    # op 1 - EVENT (data for the event)
+    # op 2 - NOTIFICATION (tells me everything except data for the event, and a type key which informs type of notification)
+    
+    # TODO: make sure it reconnects if it loses connection
+        
+    # TODO: if the msg has channel.subscribe in it.... 
+    # get info about the subscriber 
+    # create a asyncio.Queue to loop, and send the data through it.
             
 async def main() -> None: 
     headers: dict[str, str] = {"Authorization": wbtoken}

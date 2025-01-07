@@ -78,33 +78,22 @@ class ServerSocket:
             
         # gets items from the queue and processes it in printer   
         self._processor = asyncio.create_task(self.process_queue_items())
-        self._printer_ping = asyncio.create_task(self.ping_printer())
 
+        self._printer_ping = asyncio.create_task(self.ping_printer())
         # listens to websocket and puts heard data into queue
         self._runner = asyncio.create_task(self.listen())
         logger.info("Connected to the server via websocket")
 
     async def ping_printer(self) -> None:
-        # Send a command to printer...
-        count = 0
-        
         while True:
-            
             if not self.processing:
+                
                 try:
-                    # await self.printer.get_FWDPI()
                     await self.printer.reset()
                 except Exception as e:
-                    count += 1
-                    logger.warning(f"Failed to ping printer: {e}. Check the printer is connected.")
-                else:
-                    count = 0
-            
-            if count >= 5:
-                # We can actually do reconnect logic here when we do the main listener reconnect logic as well..
-                logger.error("Failed to ping printer too many times. Exiting printer ping task. Please reconnect.")
-                break
-            
+                    logger.warning(f"Failed to ping printer: {e}. Attempting reconnection...")
+                    await self.printer.connect(reconnect=True)
+
             await asyncio.sleep(60)
 
     async def listen(self) -> None:
@@ -201,6 +190,8 @@ class ServerSocket:
 
     async def process_subscription(self, eventsub):
         # step 1: print subscriber's profile picture
+        
+        print(eventsub)
 
         subscriber_id = int(eventsub["event"]["user_id"])
         subscriber_name = eventsub["event"]["user_name"]
@@ -224,20 +215,29 @@ class ServerSocket:
         # step 2: print subscriber's profile picture 
         """Takes items from the queue and sends it to the printer to be printed"""
         logger.info("Started queue processor for the printer")
+        item = None
         
         while True:
-            # Wait for an item to be available in the queue
-            item = await self.queue.get()
+            if item is None:
+                item = await self.queue.get()
+            
+            if item is None:
+                logger.warning("Queue return a None item somehow?")
+                continue
+            
             
             # basic flag cause I am a basic biatch (mysty)
             self.processing = True # HERE
             
             try:
                 await self.printer.print_image(item)
-                print("tried to print")
             except Exception as e:
                 logger.exception(e, exc_info=e)
-
+                
+                await self.printer.connect(reconnect=True)
+                continue
+            
+            item = None
             await asyncio.sleep(1)
             self.processing = False
 

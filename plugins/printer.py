@@ -34,6 +34,7 @@ class Printer:
         self._lock: asyncio.Lock = asyncio.Lock()
         # Create a Bluetooth socket for communication
         self._socket: bluetooth.BluetoothSocket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        self._reconnecting: bool = False
 
     async def receive(self, timeout: int = 10, /) -> str:
         # Receive data from the printer with a timeout
@@ -84,6 +85,8 @@ class Printer:
         async with self._lock:
             data: str | None = await self.send_command("10ff3011", recv=True)
             logger.info('Device NAME: %s', data)
+            
+            return data
 
     async def get_FWDPI(self) -> None:
         # Retrieve the device's FWDPI
@@ -212,16 +215,37 @@ class Printer:
     def _connect(self) -> None:
         self._socket.connect((self.host, 1))
 
-    async def connect(self) -> None:
-        # TODO: Add a keep-alive...
+    async def connect(self, *, reconnect: bool = False) -> None:
+        if self._reconnecting:
+            return
+        
+        self._reconnecting = True
+        
+        if reconnect and self._socket:
+            self._socket.close()
+            self._socket: bluetooth.BluetoothSocket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 
-        await asyncio.to_thread(self._connect)
-        await self.get_device_name()
-        await self.get_FWDPI()
-        await self.get_serial()
+        while True:
+            logger.info("Attempting to connect to printer...")
+            
+            try:    
+                await asyncio.to_thread(self._connect)
+                data = await self.get_device_name()
+                await self.get_FWDPI()
+                await self.get_serial()
+            except Exception as e:
+                logger.warning("Unable to connect to Printer: %s", e)
+                continue
+            
+            if data:
+                break
+            
+            logger.warning("Retrying printer connecting in 30 seconds... Printer may need physical restarting!")
+            await asyncio.sleep(30)
 
-        # Reset the device...
+        self._reconnecting = False
         await self.reset()
+        
 
     async def send(self, __value: bytes, /, *, recv: bool = False) -> None:
         data: str | None = await self._send(__value, recv=recv)
